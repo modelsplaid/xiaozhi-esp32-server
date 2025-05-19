@@ -1,0 +1,30 @@
+# Docker安装Server
+
+version: '3'
+services:
+  xiaozhi-esp32-server:
+    image: ssh_ready_image:latest
+    container_name: xiaozhi-esp32-server-ssh
+    #restart: always
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      # ws服务端
+      - "8000:8000"
+      # ota服务端
+      - "8002:8002"
+      - "2222:22"
+    volumes:
+      # 配置文件目录
+      - ./data:/opt/xiaozhi-esp32-server/data
+      # 模型文件挂接，很重要
+      - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/sh
+    command: -c "echo Hello World && service ssh start &&sleep 3 && tail -f /dev/null"
+    #command: /bin/bash todo: how to start a command in docker compose 
+    #command: /bin/bash todo: how to start a command in docker compose 
+    #command: /bin/bash todo: how to start a command in docker compose 
