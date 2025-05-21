@@ -1,0 +1,26 @@
+# Docker安装全模块
+
+version: '3'
+services:
+  xiaozhi-esp32-server-redis:
+    image: redis
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"    
+    container_name: xiaozhi-esp32-server-redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - my_shared_network
+
+networks:
+    my_shared_network:
+      name: my_shared_network
+      driver: bridge
+
+# docker compose -f .\docker-compose-redis.yml up -d

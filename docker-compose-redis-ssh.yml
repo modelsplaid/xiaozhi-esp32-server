@@ -1,0 +1,57 @@
+# Docker安装全模块
+
+version: '3'
+services:
+  xiaozhi-esp32-server-ssh:
+    image: ssh_ready_image:0521
+    container_name: xiaozhi-esp32-server-ssh0521
+    restart: always
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - TZ=Asia/Shanghai
+    expose:
+      - 2222
+      - 22
+    ports:
+      # ws服务端
+      - "8000:8000"
+      # ota服务端
+      - "8002:8002"
+      - "2222:22"
+    #volumes:
+      # 配置文件目录
+      # - ./data:/opt/xiaozhi-esp32-server/data
+      # # 模型文件挂接，很重要
+      # - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+    # networks:
+    #   - default
+    network_mode: "host"  # 使用 host 网络
+
+    depends_on:
+      - xiaozhi-esp32-server-redis
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/sh
+    command: -c "echo Hello World && service ssh start &&sleep 3 && tail -f /dev/null"
+
+  xiaozhi-esp32-server-redis:
+    image: redis:0521
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"    
+    container_name: xiaozhi-esp32-server-redis0521
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    network_mode: "host"
+    # networks:
+    #   - default
+# networks:
+#   default:
+#Enable host networking
+# docker compose -f .\docker-compose-redis-ssh.yml up -d

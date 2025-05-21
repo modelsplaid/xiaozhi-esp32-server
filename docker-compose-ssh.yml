@@ -16,15 +16,19 @@ services:
       # ota服务端
       - "8002:8002"
       - "2222:22"
-    volumes:
+    #volumes:
       # 配置文件目录
-      - ./data:/opt/xiaozhi-esp32-server/data
-      # 模型文件挂接，很重要
-      - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+      # - ./data:/opt/xiaozhi-esp32-server/data
+      # # 模型文件挂接，很重要
+      # - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
+    networks:
+      - my_shared_network
     tty: true
     stdin_open: true
     entrypoint: /bin/sh
     command: -c "echo Hello World && service ssh start &&sleep 3 && tail -f /dev/null"
-    #command: /bin/bash todo: how to start a command in docker compose 
-    #command: /bin/bash todo: how to start a command in docker compose 
-    #command: /bin/bash todo: how to start a command in docker compose 
+networks:
+    my_shared_network:
+      name: my_shared_network
+      driver: bridge
+#docker compose  -f docker-compose-ssh.yml up -d
