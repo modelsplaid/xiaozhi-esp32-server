@@ -3,8 +3,8 @@
 version: '3'
 services:
   xiaozhi-esp32-server:
-    image: ssh_ready_image:latest
-    container_name: xiaozhi-esp32-server-ssh
+    image: sshesp32adf0525:latest
+    container_name: esp32-adf-ssh
     #restart: always
     security_opt:
       - seccomp:unconfined
@@ -16,19 +16,18 @@ services:
       # ota服务端
       - "8002:8002"
       - "2222:22"
-    #volumes:
+    # devices:
+    #   - "//./COM3:/dev/ttyS0"  # 映射 COM3 到容器
+    privileged: true  # 开放所有设备权限（有安全隐患）
+    volumes:
       # 配置文件目录
+      - ./espvolume:/root/espshare
       - ./data:/opt/xiaozhi-esp32-server/data
-      # # 模型文件挂接，很重要
+      # 模型文件挂接，很重要
       - ./models/SenseVoiceSmall/model.pt:/opt/xiaozhi-esp32-server/models/SenseVoiceSmall/model.pt
-    networks:
-      - my_shared_network
     tty: true
     stdin_open: true
-    entrypoint: /bin/sh
+    entrypoint: /bin/bash
     command: -c "echo Hello World && service ssh start &&sleep 3 && tail -f /dev/null"
-networks:
-    my_shared_network:
-      name: my_shared_network
-      driver: bridge
-#docker compose  -f docker-compose-ssh.yml up -d
+    #command: docker compose -f docker-compose-esp32adf.yml up -d
+    #command: /bin/bash todo: how to start a command in docker compose 
